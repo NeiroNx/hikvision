@@ -8,10 +8,10 @@ from Cryptodome.Hash import MD5
 
 def sar(n, pos):
     tmp = bin(n)[2:]
-    while len(tmp) < 8: tmp = '0%s' %(tmp)
+    while len(tmp) < 8: tmp = '0%s'%(tmp)
     b = tmp[0]
     tmp = bin(n >> pos)[2:]
-    while len(tmp) < 8: tmp = '%s%s' %(b,tmp)
+    while len(tmp) < 8: tmp = '%s%s'%(b,tmp)
     return int(tmp,2)
 
 def Decode(BufSrc, Len):
@@ -33,7 +33,7 @@ def xorHeader (FileName, ReadLen=0, AsIT=True):
         return DstBuf
 
 def parseHeader (header):
-	numFiles = unpack('<i',header[12:16])
+	numFiles,_ = unpack('<i',header[12:16])
 	lenFileInfo = (len(header) - 64) // numFiles
 	mas = []
 	for i in range(64, len(header), lenFileInfo):
@@ -52,7 +52,7 @@ def calcFileChecksum(file):
 def crypt(_cfgUpgSecPls, flag):
 	#gen key
 	passphrase = b'h@k8807H$Z5998' 
-	passphrase = passphrase.ljust (31, b'\x00')
+	passphrase = passphrase.ljust(31, b'\x00')
 	salt = b'HangZhou'
 	key = PBKDF1(passphrase, salt, 16, 2, MD5)
 	key += PBKDF1(key + passphrase, salt, 16, 2, MD5)
@@ -89,7 +89,7 @@ def repackFirm(unpackedFirm):
 			sha = hashlib.new('sha')
 			sha.update(file)
 			fileSHA = sha.digest()
-			fileName = fileName.encode('utf-8').ljust (32, b'\x00')
+			fileName = fileName.encode('utf-8').ljust(32, b'\x00')
 			fileSize = len(file)
 			fileChecksum = calcFileChecksum(file)
 			dec_cfgUpgSecPls += fileName + fileSHA + pack('<l', fileSize) + pack('<l', fileOffset).ljust (20, b'\x00')
@@ -114,7 +114,8 @@ def repackFirm(unpackedFirm):
 	encHeader = xorHeader(decHeader)
 
 	_cfgUpgSecPls = open('_cfgUpgSecPls', 'wb')
-	_cfgUpgSecPls.write(enc_cfgUpgSecPls);_cfgUpgSecPls.close()
+	_cfgUpgSecPls.write(enc_cfgUpgSecPls)
+	_cfgUpgSecPls.close()
 
 	#concat files
 	imageName = 'custom.dav'
