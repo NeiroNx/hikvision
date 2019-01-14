@@ -33,7 +33,7 @@ def xorHeader (FileName, ReadLen=0, AsIT=True):
         return DstBuf
 
 def parseHeader (header):
-	numFiles = int.from_bytes(header[12:16], byteorder='little')
+	numFiles = unpack('<i',header[12:16])
 	lenFileInfo = (len(header) - 64) // numFiles
 	mas = []
 	for i in range(64, len(header), lenFileInfo):
@@ -49,7 +49,7 @@ def calcFileChecksum(file):
 		checkSum += i
 	return checkSum
 
-def crypt(_cfgUpgSecPls, flag: chr):
+def crypt(_cfgUpgSecPls, flag):
 	#gen key
 	passphrase = b'h@k8807H$Z5998' 
 	passphrase = passphrase.ljust (31, b'\x00')
