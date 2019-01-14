@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python
 import os, sys, shutil, hashlib
 from struct import pack, unpack
 from Cryptodome.Util.Padding import pad
