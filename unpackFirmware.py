@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import os, sys
+from struct import pack, unpack
 
 def sar(n, pos):
     tmp = bin(n)[2:]
@@ -29,9 +30,9 @@ def xorHeader (FileName, ReadLen=0, AsIT=True):
 
 def parseHeader (header):
 
-	headerChecksum = int.from_bytes(header[4:8], byteorder='little')
-	headerLength = int.from_bytes(header[8:12], byteorder='little')
-	numFiles = int.from_bytes(header[12:16], byteorder='little')
+	headerChecksum = unpack('<i',header[4:8])[0]
+	headerLength = unpack('<i',header[8:12])[0]
+	numFiles = unpack('<i',header[12:16])[0]
 	
 	lenFileInfo = (headerLength - 64) // numFiles
 	
@@ -43,9 +44,9 @@ def parseHeader (header):
 	for i in mas:
 		temp = []
 		temp.append((i[:32:].rstrip(b'\x00')).decode('utf-8'))    # fileName
-		temp.append(int.from_bytes(i[32:36], byteorder='little')) # fileOffset 
-		temp.append(int.from_bytes(i[36:40], byteorder='little')) # fileSize
-		#temp.append(int.from_bytes(i[40:44], byteorder='little')) # fileChecksum
+		temp.append(unpack('<i',i[32:36])[0]) # fileOffset 
+		temp.append(unpack('<i',i[36:40])[0]) # fileSize
+		#temp.append(unpack('<i',i[40:44])[0]) # fileChecksum
 		filesInfo.append(temp)
 	
 
@@ -55,7 +56,7 @@ def cutFiles(firmware):
 	name = firmware
 	firm = open(firmware, 'rb').read()
 	lenHeaderEnc = firm[:16]
-	lenHeaderDec = int.from_bytes(xorHeader(lenHeaderEnc)[8:12], byteorder='little')
+	lenHeaderDec = unpack('<i',xorHeader(lenHeaderEnc)[8:12])[0]
 	headerEnc = firm[:lenHeaderDec:]
 	headerDec = xorHeader(headerEnc)
 	os.mkdir(name + '_unpacked')
